@@ -497,7 +497,10 @@ describe('features/overlays', function() {
 
   describe('zoom behavior', function() {
 
-    beforeEach(bootstrapDiagram({ modules: [ overlayModule ], overlays: { deferUpdate: false }}));
+    beforeEach(bootstrapDiagram({
+      modules: [ overlayModule ],
+      canvas: { deferUpdate: false }
+    }));
 
 
     var shape;
@@ -555,6 +558,54 @@ describe('features/overlays', function() {
 
       // then
       expect(isVisible(html)).to.be.false;
+    }));
+
+
+    it('should respect min show rules when overlay is added', inject(function(overlays, canvas) {
+
+      // given
+      var html = createOverlay();
+
+      // when zoom below visibility range
+      canvas.zoom(0.6);
+
+      overlays.add(shape, {
+        html: html,
+        position: { left: 20, bottom: 0 }
+      });
+
+      // then
+      expect(isVisible(html)).to.be.false;
+
+      // when zoom in visibility range
+      canvas.zoom(0.7);
+
+      // then
+      expect(isVisible(html)).to.be.true;
+    }));
+
+
+    it('should respect max show rules when overlay is added', inject(function(overlays, canvas) {
+
+      // given
+      var html = createOverlay();
+
+      // when zoom above visibility range
+      canvas.zoom(6.0);
+
+      overlays.add(shape, {
+        html: html,
+        position: { left: 20, bottom: 0 }
+      });
+
+      // then
+      expect(isVisible(html)).to.be.false;
+
+      // when zoom in visibility range
+      canvas.zoom(3.0);
+
+      // then
+      expect(isVisible(html)).to.be.true;
     }));
 
 
@@ -619,7 +670,10 @@ describe('features/overlays', function() {
 
   describe('scroll/zoom behavior', function() {
 
-    beforeEach(bootstrapDiagram({ modules: [ overlayModule ], overlays: { deferUpdate: false }}));
+    beforeEach(bootstrapDiagram({
+      modules: [ overlayModule ],
+      canvas: { deferUpdate: false }
+    }));
 
 
     var shape, overlay;
